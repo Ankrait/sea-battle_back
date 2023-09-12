@@ -1,4 +1,5 @@
 import http from 'http';
+import httpProxy from 'http-proxy';
 import express from 'express';
 import cors from 'cors';
 import WebSocket, { RawData } from 'ws';
@@ -17,6 +18,7 @@ const PORT = 8080;
 const app = express();
 const server = http.createServer(app);
 export const wss = new WebSocket.Server({ server });
+
 const dispatchEvent = async (message: RawData, ws: WebSocket) => {
 	const { event, payload } = JSON.parse(message.toString()) as GameRequestType;
 	switch (event) {
@@ -49,7 +51,20 @@ wss.on('connection', (ws, req) => {
 
 const bodyParserMiddleware = express.json();
 app.use(bodyParserMiddleware);
-app.use(cors());
+
+const corsOptions = {
+	origin: '*',
+	credentials: true,
+	optionsSuccessStatus: 200,
+};
+
+app.use((_, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+	next();
+});
+
+app.use(cors(corsOptions));
 
 app.post('/game', async (req, res) => {
 	try {
@@ -136,6 +151,11 @@ app.get('/random_field', (_, res) => {
 	} catch {
 		res.status(400).send({ message: 'Ошибка сервера' });
 	}
+});
+
+const proxy = httpProxy.createProxyServer({});
+server.on('upgrade', (req, socket, head) => {
+	proxy.ws(req, socket, head, { target: 'ws://localhost:3001' });
 });
 
 const start = async () => {
