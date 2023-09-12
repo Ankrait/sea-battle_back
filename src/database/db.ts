@@ -2,9 +2,9 @@ import { Sequelize } from 'sequelize';
 import { getConfig } from '../config/config';
 
 export const sequelize = new Sequelize(
-	getConfig('DB_NAME'), // Название БД
-	getConfig('DB_USER'), // Пользователь
-	getConfig('DB_PASSWORD'), // ПАРОЛЬ
+	getConfig('DB_NAME'),
+	getConfig('DB_USER'),
+	getConfig('DB_PASSWORD'),
 	{
 		dialect: 'postgres',
 		host: getConfig('DB_HOST'),

@@ -1,5 +1,3 @@
-import { FieldType, IPosition } from '../interfaces';
-
 export const createToken = (len = 5): string => {
 	const symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.split('');
 	const token = [];
@@ -12,6 +10,6 @@ export const createToken = (len = 5): string => {
 	return token.join('');
 };
 
-export type WithOptional<T, K extends keyof T> = Partial<Omit<T, K>> &
-	Required<Pick<T, K>>;
-
+export const randNum = (min = 0, max = 9) => {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+};

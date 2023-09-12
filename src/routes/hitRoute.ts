@@ -3,6 +3,8 @@ import WebSocket from 'ws';
 import { IHitPayload } from '../common/interfaces';
 import { Game } from '../database/models/game';
 import { sendErrorMessage, sendGameResponse } from './utils';
+import { checkShipIsDead } from '../common/utils/field/check';
+import { isPosValid } from '../common/utils/field/base';
 
 export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
 	try {
@@ -13,17 +15,12 @@ export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
 			return;
 		}
 
-		if (
-			payload.hit.x > 9 ||
-			payload.hit.x < 0 ||
-			payload.hit.y > 9 ||
-			payload.hit.y < 0
-		) {
+		const { x, y } = payload.hit;
+
+		if (!isPosValid({ x, y }, 10)) {
 			sendErrorMessage(ws, 'Ошибка данных');
 			return;
 		}
-
-		const { x, y } = payload.hit;
 
 		if (game.player1 === payload.player) {
 			if (game.status !== 'HIT1') {
@@ -31,26 +28,54 @@ export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
 				return;
 			}
 
-			if (game.field2[y][x] === 'MISS' || game.field2[y][x] === 'DEAD') {
+			if (game.field2[y][x] !== 'EMPTY' && game.field2[y][x] !== 'SHIP') {
 				sendErrorMessage(ws, 'Ошибка: повторный выстрел');
 				return;
 			}
 
-			game.field2[y][x] = game.field2[y][x] === 'SHIP' ? 'DEAD' : 'MISS';
-			game.status = 'HIT2';
+			if (game.field2[y][x] === 'SHIP') {
+				const shipDead = checkShipIsDead(game.field2, { y, x });
+
+				if (!shipDead) {
+					game.field2[y][x] = 'DEAD';
+				} else {
+					for (const { x: tx, y: ty } of shipDead) {
+						game.field2[ty][tx] = 'DEAD_SHIP';
+					}
+				}
+			} else {
+				game.field2[y][x] = 'MISS';
+				game.status = 'HIT2';
+			}
+
+			game.changed('field2', true);
 		} else if (game.player2 === payload.player) {
 			if (game.status !== 'HIT2') {
 				sendErrorMessage(ws, 'Ошибка: не ваш ход');
 				return;
 			}
 
-			if (game.field1[y][x] === 'MISS' || game.field1[y][x] === 'DEAD') {
+			if (game.field1[y][x] !== 'EMPTY' && game.field1[y][x] !== 'SHIP') {
 				sendErrorMessage(ws, 'Ошибка: повторный выстрел');
 				return;
 			}
 
-			game.field1[y][x] = game.field1[y][x] === 'SHIP' ? 'DEAD' : 'MISS';
-			game.status = 'HIT1';
+			if (game.field1[y][x] === 'SHIP') {
+				const shipDead = checkShipIsDead(game.field1, { y, x });
+
+				if (!shipDead) {
+					game.field1[y][x] = 'DEAD';
+				} else {
+					for (const { x: tx, y: ty } of shipDead) {
+						game.field1[ty][tx] = 'DEAD_SHIP';
+					}
+				}
+			} else {
+				game.field1[y][x] = 'MISS';
+				game.status = 'HIT1';
+			}
+
+			game.changed('field1', true);
 		} else {
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');
 			return;
@@ -62,6 +87,7 @@ export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
 		) {
 			game.status = 'END';
 		}
+
 		await game.save();
 
 		sendGameResponse(game);

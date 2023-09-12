@@ -1,9 +1,9 @@
 import WebSocket from 'ws';
 
 import { ISchemePayload } from '../common/interfaces';
-import { isCorrectField } from '../common/utils/fields';
 import { Game } from '../database/models/game';
 import { sendErrorMessage, sendGameResponse } from './utils';
+import { isFieldCorrect } from '../common/utils/field/check';
 
 export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 	try {
@@ -13,14 +13,24 @@ export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 			return;
 		}
 
-		// if (!isCorrectField(payload.field)) {
-		// 	sendErrorMessage(ws, 'Некорректное поле');
-		// 	return;
-		// }
+		if (!isFieldCorrect(payload.field)) {
+			sendErrorMessage(ws, 'Некорректное поле');
+			return;
+		}
 
 		if (game.player1 === payload.player) {
+			if (game.isReady1) {
+				sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
+				return;
+			}
+
 			game.field1 = payload.field;
 		} else if (game.player2 === payload.player) {
+			if (game.isReady2) {
+				sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
+				return;
+			}
+
 			game.field2 = payload.field;
 		} else {
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');

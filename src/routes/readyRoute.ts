@@ -1,9 +1,9 @@
 import WebSocket from 'ws';
 
 import { IReadyPayload } from '../common/interfaces';
-import { isCorrectShipCount } from '../common/utils/fields';
 import { Game } from '../database/models/game';
 import { sendErrorMessage, sendGameResponse } from './utils';
+import { getDeckCount } from '../common/utils/field/check';
 
 export const readyRoute = async (payload: IReadyPayload, ws: WebSocket) => {
 	try {
@@ -14,13 +14,13 @@ export const readyRoute = async (payload: IReadyPayload, ws: WebSocket) => {
 		}
 
 		if (game.player1 === payload.player) {
-			if (payload.isReady && !isCorrectShipCount(game.field1)) {
+			if (payload.isReady && !getDeckCount(game.field1)) {
 				sendErrorMessage(ws, 'Некорректное количество кораблей');
 				return;
 			}
 			game.isReady1 = payload.isReady;
 		} else if (game.player2 === payload.player) {
-			if (payload.isReady && !isCorrectShipCount(game.field2)) {
+			if (payload.isReady && !getDeckCount(game.field2)) {
 				sendErrorMessage(ws, 'Некорректное количество кораблей');
 				return;
 			}

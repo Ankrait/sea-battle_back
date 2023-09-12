@@ -1,6 +1,6 @@
 export type EventType = 'CONNECTION' | 'SCHEME' | 'READY' | 'HIT';
 export type GameStatusType = 'INIT' | 'HIT1' | 'HIT2' | 'END';
-export type FieldType = 'EMPTY' | 'SHIP' | 'DEAD' | 'MISS';
+export type FieldType = 'EMPTY' | 'SHIP' | 'DEAD' | 'DEAD_SHIP' | 'MISS';
 
 export interface IPosition {
 	x: number;
@@ -55,3 +55,6 @@ export type GameRequestType =
 	| IBaseRequest<'SCHEME', ISchemePayload>
 	| IBaseRequest<'READY', IReadyPayload>
 	| IBaseRequest<'HIT', IHitPayload>;
+
+export type WithOptional<T, K extends keyof T> = Partial<Omit<T, K>> &
+	Required<Pick<T, K>>;

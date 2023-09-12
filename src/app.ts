@@ -7,9 +7,10 @@ import { sequelize } from './database/db';
 import { GameRequestType, IGameIdResponse } from './common/interfaces';
 import { connectionRoute, hitRoute, readyRoute, schemeRoute } from './routes';
 import { createToken } from './common/utils/base';
-import { createField } from './common/utils/fields';
 import { Game } from './database/models/game';
 import { sendErrorMessage } from './routes/utils';
+import { createField, randomField } from './common/utils/field/create';
+import { isFieldCorrect } from './common/utils/field/check';
 
 const PORT = 8080;
 
@@ -84,20 +85,6 @@ app.post('/game', async (req, res) => {
 	}
 });
 
-// app.get('/game/:id', async (req, res) => {
-// 	try {
-// 		const game = await Game.findByPk(req.params.id);
-
-// 		if (game) {
-// 			res.status(200).send(game);
-// 		} else {
-// 			res.status(400).send({ message: 'Игры по данному ключу нет' });
-// 		}
-// 	} catch {
-// 		res.status(400).send({ message: 'Ошибка сервера' });
-// 	}
-// });
-
 app.put('/game/:id', async (req, res) => {
 	try {
 		const name = req.body.player as string;
@@ -132,6 +119,20 @@ app.put('/game/:id', async (req, res) => {
 		};
 
 		res.status(200).send(response);
+	} catch {
+		res.status(400).send({ message: 'Ошибка сервера' });
+	}
+});
+
+app.get('/random_field', (_, res) => {
+	try {
+		let field = randomField();
+
+		while (!isFieldCorrect(field)) {
+			field = randomField();
+		}
+
+		res.status(200).send({ field });
 	} catch {
 		res.status(400).send({ message: 'Ошибка сервера' });
 	}
