@@ -66,6 +66,11 @@ gameRouter.put('/:id', async (req, res) => {
 			return;
 		}
 
+		if (game.player1 === name) {
+			res.status(400).send({ message: 'Имя занято' });
+			return;
+		}
+
 		game.player2 = name;
 		await game.save();
 

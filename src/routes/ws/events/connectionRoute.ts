@@ -15,11 +15,16 @@ export const connectionRoute = async (payload: IConnectionPayload, ws: WebSocket
 		}
 
 		if (payload.player !== game.player1 && payload.player !== game.player2) {
+			console.log(game);
+
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');
 			return;
 		}
 
 		users.set(`${game.id}+${payload.player}`, ws);
+		ws.onclose = () => {
+			users.delete(`${game.id}+${payload.player}`);
+		};
 
 		sendGameResponse(game);
 	} catch {

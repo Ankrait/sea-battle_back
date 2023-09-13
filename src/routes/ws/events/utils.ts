@@ -41,31 +41,11 @@ export const getGameResponse = (player: string, game: Game) => {
 };
 
 export const sendGameResponse = (game: Game) => {
-	const response1: IGameResponse = {
-		gameId: game.id,
-		userNumber: 1,
-		user: game.player1,
-		userField: game.field1,
-		isReady: game.isReady1,
-		enemy: game.player2,
-		enemyField: game.field2,
-		enemyIsReady: game.isReady2,
-		status: game.status,
-	};
+	const response1 = getGameResponse(game.player1, game)!;
 	users.get(`${game.id}+${game.player1}`)?.send(JSON.stringify(response1));
 
 	if (game.player2) {
-		const response2: IGameResponse = {
-			gameId: game.id,
-			userNumber: 2,
-			user: game.player2,
-			userField: game.field2,
-			isReady: game.isReady2,
-			enemy: game.player1,
-			enemyField: game.field1,
-			enemyIsReady: game.isReady1,
-			status: game.status,
-		};
+		const response2 = getGameResponse(game.player2, game)!;
 		users.get(`${game.id}+${game.player2}`)?.send(JSON.stringify(response2));
 	}
 };
