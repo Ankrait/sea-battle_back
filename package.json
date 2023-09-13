@@ -1,12 +1,12 @@
 {
   "name": "sea-battle_back",
   "version": "1.0.0",
-  "main": "dist/app.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist & tsc",
     "start": "node .",
-    "dev": "nodemon --watch src/**/*.ts --exec \"ts-node\" src/app.ts"
+    "dev": "nodemon --watch src/**/*.ts --exec \"ts-node\" src/index.ts"
   },
   "dependencies": {
     "@types/cors": "^2.8.14",
