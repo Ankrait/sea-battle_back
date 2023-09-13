@@ -1,8 +1,8 @@
 import WebSocket from 'ws';
 
-import { IGameResponse } from '../common/interfaces';
-import { Game } from '../database/models/game';
-import { users } from '../connectedUsers';
+import { IGameResponse } from 'common/interfaces';
+import { Game } from 'database/models/game';
+import { users } from 'connectedUsers';
 
 export const sendErrorMessage = (ws: WebSocket, message: string) => {
 	ws.send(JSON.stringify({ message }));

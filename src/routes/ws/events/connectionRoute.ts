@@ -1,9 +1,10 @@
 import WebSocket from 'ws';
 
-import { IConnectionPayload } from '../common/interfaces';
-import { Game } from '../database/models/game';
+import { IConnectionPayload } from 'common/interfaces';
+import { Game } from 'database/models/game';
+import { users } from 'connectedUsers';
+
 import { sendErrorMessage, sendGameResponse } from './utils';
-import { users } from '../connectedUsers';
 
 export const connectionRoute = async (payload: IConnectionPayload, ws: WebSocket) => {
 	try {

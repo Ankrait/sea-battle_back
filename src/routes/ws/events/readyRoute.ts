@@ -1,9 +1,10 @@
 import WebSocket from 'ws';
 
-import { IReadyPayload } from '../common/interfaces';
-import { Game } from '../database/models/game';
+import { IReadyPayload } from 'common/interfaces';
+import { Game } from 'database/models/game';
+import { getDeckCount } from 'common/utils/field/check';
+
 import { sendErrorMessage, sendGameResponse } from './utils';
-import { getDeckCount } from '../common/utils/field/check';
 
 export const readyRoute = async (payload: IReadyPayload, ws: WebSocket) => {
 	try {

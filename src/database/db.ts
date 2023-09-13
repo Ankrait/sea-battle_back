@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
-import { getConfig } from '../config/config';
+
+import { getConfig } from 'config/config';
 
 export const sequelize = new Sequelize(
 	getConfig('DB_NAME'),

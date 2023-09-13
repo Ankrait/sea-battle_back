@@ -1,10 +1,11 @@
 import WebSocket from 'ws';
 
-import { IHitPayload } from '../common/interfaces';
-import { Game } from '../database/models/game';
+import { IHitPayload } from 'common/interfaces';
+import { Game } from 'database/models/game';
+import { checkShipIsDead } from 'common/utils/field/check';
+import { isPosValid } from 'common/utils/field/base';
+
 import { sendErrorMessage, sendGameResponse } from './utils';
-import { checkShipIsDead } from '../common/utils/field/check';
-import { isPosValid } from '../common/utils/field/base';
 
 export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
 	try {

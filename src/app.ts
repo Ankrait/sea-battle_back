@@ -1,16 +1,15 @@
 import http from 'http';
 import express from 'express';
 import cors from 'cors';
-import WebSocket, { RawData } from 'ws';
+import WebSocket from 'ws';
 
-import { sequelize } from './database/db';
-import { GameRequestType, IGameIdResponse } from './common/interfaces';
-import { connectionRoute, hitRoute, readyRoute, schemeRoute } from './routes';
-import { createToken } from './common/utils/base';
-import { Game } from './database/models/game';
-import { sendErrorMessage } from './routes/utils';
-import { createField, randomField } from './common/utils/field/create';
-import { isFieldCorrect } from './common/utils/field/check';
+import { sequelize } from 'database/db';
+import { IGameIdResponse } from 'common/interfaces';
+import { createToken } from 'common/utils/base';
+import { Game } from 'database/models/game';
+import { createField, randomField } from 'common/utils/field/create';
+import { isFieldCorrect } from 'common/utils/field/check';
+import { dispatchEvent } from 'routes/ws/dispatchEvent';
 
 const PORT = 8080;
 
@@ -18,39 +17,13 @@ const app = express();
 const server = http.createServer(app);
 export const wss = new WebSocket.Server({ server });
 
-const dispatchEvent = async (message: RawData, ws: WebSocket) => {
-	const { event, payload } = JSON.parse(message.toString()) as GameRequestType;
-	switch (event) {
-		case 'CONNECTION':
-			connectionRoute(payload, ws);
-			break;
-
-		case 'SCHEME':
-			schemeRoute(payload, ws);
-			break;
-
-		case 'READY':
-			readyRoute(payload, ws);
-			break;
-
-		case 'HIT':
-			hitRoute(payload, ws);
-			break;
-
-		default:
-			sendErrorMessage(ws, 'Неверный запрос');
-			break;
-	}
-};
-
-wss.on('connection', (ws, req) => {
+wss.on('connection', (ws) => {
 	ws.on('message', (m) => dispatchEvent(m, ws));
 	ws.on('error', (e: any) => ws.send(e));
 });
 
 const bodyParserMiddleware = express.json();
 app.use(bodyParserMiddleware);
-
 app.use(cors());
 
 app.post('/game', async (req, res) => {

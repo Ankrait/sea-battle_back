@@ -1,6 +1,8 @@
-import { FieldType, GameStatusType } from '../../common/interfaces';
-import { sequelize } from '../db';
 import { DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+
+import { FieldType, GameStatusType } from 'common/interfaces';
+
+import { sequelize } from '../db';
 
 export class Game extends Model<InferAttributes<Game>, InferCreationAttributes<Game>> {
 	declare id: string;

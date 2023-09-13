@@ -1,5 +1,6 @@
-import { FieldType, IPosition } from '../../interfaces';
-import { randNum } from '../base';
+import { FieldType, IPosition } from 'common/interfaces';
+import { randNum } from 'common/utils/base';
+
 import { aroundDirections, isPosValid } from './base';
 
 export const createField = (N = 10) => {

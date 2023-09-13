@@ -1,4 +1,5 @@
-import { IPosition } from '../../interfaces';
+import { IPosition } from 'common/interfaces';
+
 export const aroundDirections = [
 	[0, 0],
 	[0, 1],

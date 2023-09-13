@@ -1,9 +1,10 @@
 import WebSocket from 'ws';
 
-import { ISchemePayload } from '../common/interfaces';
-import { Game } from '../database/models/game';
+import { ISchemePayload } from 'common/interfaces';
+import { Game } from 'database/models/game';
+import { isFieldCorrect } from 'common/utils/field/check';
+
 import { sendErrorMessage, sendGameResponse } from './utils';
-import { isFieldCorrect } from '../common/utils/field/check';
 
 export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 	try {
@@ -12,7 +13,7 @@ export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 			sendErrorMessage(ws, 'Игры по данному ключу нет');
 			return;
 		}
-		
+
 		if (!isFieldCorrect(payload.field)) {
 			sendErrorMessage(ws, 'Некорректное поле');
 			return;
@@ -40,7 +41,7 @@ export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 		await game.save();
 
 		sendGameResponse(game);
-	} catch(e) {
+	} catch (e) {
 		console.log(e);
 		sendErrorMessage(ws, 'Ошибка сервера');
 	}

@@ -1,5 +1,5 @@
 import { aroundDirections, isPosValid } from './base';
-import { FieldType, IPosition } from '../../interfaces';
+import { FieldType, IPosition } from 'common/interfaces';
 
 const getShipsPositions = (field: FieldType[][]) => {
 	const ships: { [key: number]: IPosition[][] } = {
