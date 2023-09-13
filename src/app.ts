@@ -1,5 +1,4 @@
 import http from 'http';
-import httpProxy from 'http-proxy';
 import express from 'express';
 import cors from 'cors';
 import WebSocket, { RawData } from 'ws';
@@ -52,19 +51,7 @@ wss.on('connection', (ws, req) => {
 const bodyParserMiddleware = express.json();
 app.use(bodyParserMiddleware);
 
-const corsOptions = {
-	origin: '*',
-	credentials: true,
-	optionsSuccessStatus: 200,
-};
-
-app.use((_, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-	next();
-});
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.post('/game', async (req, res) => {
 	try {
@@ -148,14 +135,9 @@ app.get('/random_field', (_, res) => {
 		}
 
 		res.status(200).send({ field });
-	} catch {
+	} catch (e) {
 		res.status(400).send({ message: 'Ошибка сервера' });
 	}
-});
-
-const proxy = httpProxy.createProxyServer({});
-server.on('upgrade', (req, socket, head) => {
-	proxy.ws(req, socket, head, { target: 'ws://localhost:3001' });
 });
 
 const start = async () => {
