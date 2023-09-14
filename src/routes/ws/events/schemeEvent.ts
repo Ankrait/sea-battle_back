@@ -4,9 +4,9 @@ import { ISchemePayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
 import { isFieldCorrect } from 'common/utils/field/check';
 
-import { sendErrorMessage, sendGameResponse } from './utils';
+import { sendErrorMessage, sendGameResponse, getGameResponse } from './utils';
 
-export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
+export const schemeEvent = async (payload: ISchemePayload, ws: WebSocket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 		if (!game) {
@@ -19,24 +19,19 @@ export const schemeRoute = async (payload: ISchemePayload, ws: WebSocket) => {
 			return;
 		}
 
-		if (game.player1 === payload.player) {
-			if (game.isReady1) {
-				sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
-				return;
-			}
+		const playerData = getGameResponse(payload.player, game);
 
-			game.field1 = payload.field;
-		} else if (game.player2 === payload.player) {
-			if (game.isReady2) {
-				sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
-				return;
-			}
-
-			game.field2 = payload.field;
-		} else {
+		if (!playerData) {
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');
 			return;
 		}
+
+		if (playerData.isReady) {
+			sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
+			return;
+		}
+
+		game[`field${playerData.userNumber}`] = payload.field;
 
 		await game.save();
 

@@ -4,9 +4,9 @@ import { IReadyPayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
 import { getDeckCount } from 'common/utils/field/check';
 
-import { sendErrorMessage, sendGameResponse } from './utils';
+import { sendErrorMessage, sendGameResponse, getGameResponse } from './utils';
 
-export const readyRoute = async (payload: IReadyPayload, ws: WebSocket) => {
+export const readyEvent = async (payload: IReadyPayload, ws: WebSocket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 		if (!game) {
@@ -14,22 +14,19 @@ export const readyRoute = async (payload: IReadyPayload, ws: WebSocket) => {
 			return;
 		}
 
-		if (game.player1 === payload.player) {
-			if (payload.isReady && !getDeckCount(game.field1)) {
-				sendErrorMessage(ws, 'Некорректное количество кораблей');
-				return;
-			}
-			game.isReady1 = payload.isReady;
-		} else if (game.player2 === payload.player) {
-			if (payload.isReady && !getDeckCount(game.field2)) {
-				sendErrorMessage(ws, 'Некорректное количество кораблей');
-				return;
-			}
-			game.isReady2 = payload.isReady;
-		} else {
+		const playerData = getGameResponse(payload.player, game);
+
+		if (!playerData) {
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');
 			return;
 		}
+
+		if (payload.isReady && getDeckCount(playerData.userField) !== 20) {
+			sendErrorMessage(ws, 'Некорректное количество кораблей');
+			return;
+		}
+
+		game[`isReady${playerData.userNumber}`] = payload.isReady;
 
 		if (game.isReady1 && game.isReady2) game.status = 'HIT1';
 

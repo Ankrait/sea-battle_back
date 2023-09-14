@@ -6,7 +6,7 @@ import { users } from 'connectedUsers';
 
 import { sendErrorMessage, sendGameResponse } from './utils';
 
-export const connectionRoute = async (payload: IConnectionPayload, ws: WebSocket) => {
+export const connectionEvent = async (payload: IConnectionPayload, ws: WebSocket) => {
 	try {
 		const game = await Game.findByPk(payload.gameId);
 		if (!game) {

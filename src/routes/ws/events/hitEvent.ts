@@ -7,7 +7,7 @@ import { isPosValid } from 'common/utils/field/base';
 
 import { getGameResponse, sendErrorMessage, sendGameResponse } from './utils';
 
-export const hitRoute = async (payload: IHitPayload, ws: WebSocket) => {
+export const hitEvent = async (payload: IHitPayload, ws: WebSocket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 
