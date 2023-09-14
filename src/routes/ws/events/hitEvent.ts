@@ -68,15 +68,23 @@ export const hitEvent = async (payload: IHitPayload, ws: WebSocket) => {
 			game.changed('field1', true);
 		}
 
+		let isToDelete = true;
+
 		if (!game.field1.some((el) => el.includes('SHIP'))) {
 			game.status = 'WIN2';
 		} else if (!game.field2.some((el) => el.includes('SHIP'))) {
 			game.status = 'WIN1';
+		} else {
+			isToDelete = false;
 		}
 
 		await game.save();
-
 		sendGameResponse(game);
+
+		if (isToDelete) {
+			await game.destroy();
+			await game.save();
+		}
 	} catch {
 		sendErrorMessage(ws, 'Ошибка сервера');
 	}

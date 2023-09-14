@@ -25,6 +25,9 @@ export const surrenderEvent = async (payload: IConnectionPayload, ws: WebSocket)
 		game.save();
 
 		sendGameResponse(game);
+
+		await game.destroy();
+		await game.save();
 	} catch {
 		sendErrorMessage(ws, 'Ошибка сервера');
 	}
