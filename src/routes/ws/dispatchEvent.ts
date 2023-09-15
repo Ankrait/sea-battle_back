@@ -1,4 +1,4 @@
-import WebSocket, { RawData } from 'ws';
+import Socket from 'socket.io';
 
 import { GameRequestType } from 'common/interfaces';
 import { sendErrorMessage } from 'routes/ws/events/utils';
@@ -9,8 +9,10 @@ import { readyEvent } from './events/readyEvent';
 import { hitEvent } from './events/hitEvent';
 import { surrenderEvent } from './events/surrenderEvent';
 
-export const dispatchEvent = async (message: RawData, ws: WebSocket) => {
-	const { event, payload } = JSON.parse(message.toString()) as GameRequestType;
+export const dispatchEvent = async (message: any, ws: Socket.Socket) => {
+	console.log(message);
+	
+	const { event, payload } = message as GameRequestType;
 	switch (event) {
 		case 'CONNECTION':
 			connectionEvent(payload, ws);

@@ -1,7 +1,7 @@
 import http from 'http';
 import express from 'express';
 import cors from 'cors';
-import WebSocket from 'ws';
+import Socket, { Server } from 'socket.io';
 
 import { dispatchEvent } from 'routes/ws/dispatchEvent';
 import { gameRouter } from 'routes/gameRouter';
@@ -9,11 +9,15 @@ import { randomFieldRouter } from 'routes/randomFieldRouter';
 
 const app = express();
 export const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const socket = new Server(server, {
+	cors: {
+		origin: '*',
+	},
+});
 
-wss.on('connection', (ws) => {
+socket.on('connection', (ws: Socket.Socket) => {
 	ws.on('message', (m) => dispatchEvent(m, ws));
-	ws.on('error', (e: any) => ws.send(e));
+	ws.on('error', (e) => ws.emit('message', e));
 });
 
 const bodyParserMiddleware = express.json();

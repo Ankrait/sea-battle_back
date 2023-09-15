@@ -1,3 +1,3 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
-export const users: Map<string, WebSocket> = new Map();
+export const users: Map<string, Socket.Socket> = new Map();

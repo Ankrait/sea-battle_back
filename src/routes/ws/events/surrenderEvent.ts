@@ -1,12 +1,11 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { IConnectionPayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
-import { users } from 'connectedUsers';
 
 import { getGameResponse, sendErrorMessage, sendGameResponse } from './utils';
 
-export const surrenderEvent = async (payload: IConnectionPayload, ws: WebSocket) => {
+export const surrenderEvent = async (payload: IConnectionPayload, ws: Socket.Socket) => {
 	try {
 		const game = await Game.findByPk(payload.gameId);
 		if (!game) {

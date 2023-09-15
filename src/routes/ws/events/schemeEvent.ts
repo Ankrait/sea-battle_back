@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { ISchemePayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
@@ -6,7 +6,7 @@ import { isFieldCorrect } from 'common/utils/field/check';
 
 import { sendErrorMessage, sendGameResponse, getGameResponse } from './utils';
 
-export const schemeEvent = async (payload: ISchemePayload, ws: WebSocket) => {
+export const schemeEvent = async (payload: ISchemePayload, ws: Socket.Socket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 		if (!game) {

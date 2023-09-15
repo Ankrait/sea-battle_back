@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { IConnectionPayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
@@ -6,7 +6,7 @@ import { users } from 'connectedUsers';
 
 import { sendErrorMessage, sendGameResponse } from './utils';
 
-export const connectionEvent = async (payload: IConnectionPayload, ws: WebSocket) => {
+export const connectionEvent = async (payload: IConnectionPayload, ws: Socket.Socket) => {
 	try {
 		const game = await Game.findByPk(payload.gameId);
 		if (!game) {
@@ -22,9 +22,9 @@ export const connectionEvent = async (payload: IConnectionPayload, ws: WebSocket
 		}
 
 		users.set(`${game.id}+${payload.player}`, ws);
-		ws.onclose = () => {
+		ws.on('close', () => {
 			users.delete(`${game.id}+${payload.player}`);
-		};
+		});
 
 		sendGameResponse(game);
 	} catch {

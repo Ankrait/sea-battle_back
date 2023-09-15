@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { IHitPayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
@@ -7,7 +7,7 @@ import { isPosValid } from 'common/utils/field/base';
 
 import { getGameResponse, sendErrorMessage, sendGameResponse } from './utils';
 
-export const hitEvent = async (payload: IHitPayload, ws: WebSocket) => {
+export const hitEvent = async (payload: IHitPayload, ws: Socket.Socket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 

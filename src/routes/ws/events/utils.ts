@@ -1,11 +1,11 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { IGameResponse } from 'common/interfaces';
 import { Game } from 'database/models/game';
 import { users } from 'connectedUsers';
 
-export const sendErrorMessage = (ws: WebSocket, message: string) => {
-	ws.send(JSON.stringify({ message }));
+export const sendErrorMessage = (ws: Socket.Socket, message: string) => {
+	ws.emit('message', { message });
 };
 
 export const getGameResponse = (player: string, game: Game) => {
@@ -42,10 +42,10 @@ export const getGameResponse = (player: string, game: Game) => {
 
 export const sendGameResponse = (game: Game) => {
 	const response1 = getGameResponse(game.player1, game)!;
-	users.get(`${game.id}+${game.player1}`)?.send(JSON.stringify(response1));
+	users.get(`${game.id}+${game.player1}`)?.emit('message', response1);
 
 	if (game.player2) {
 		const response2 = getGameResponse(game.player2, game)!;
-		users.get(`${game.id}+${game.player2}`)?.send(JSON.stringify(response2));
+		users.get(`${game.id}+${game.player2}`)?.emit('message', response2);
 	}
 };

@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import Socket from 'socket.io';
 
 import { IReadyPayload } from 'common/interfaces';
 import { Game } from 'database/models/game';
@@ -6,7 +6,7 @@ import { getDeckCount } from 'common/utils/field/check';
 
 import { sendErrorMessage, sendGameResponse, getGameResponse } from './utils';
 
-export const readyEvent = async (payload: IReadyPayload, ws: WebSocket) => {
+export const readyEvent = async (payload: IReadyPayload, ws: Socket.Socket) => {
 	try {
 		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
 		if (!game) {
