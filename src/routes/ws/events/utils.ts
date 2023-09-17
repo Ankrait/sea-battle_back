@@ -1,14 +1,14 @@
 import Socket from 'socket.io';
 
 import { IGameResponse } from 'common/interfaces';
-import { Game } from 'database/models/game';
+import { IGameAttributes } from 'database/models/game';
 import { users } from 'connectedUsers';
 
 export const sendErrorMessage = (ws: Socket.Socket, message: string) => {
 	ws.emit('message', { message });
 };
 
-export const getGameResponse = (player: string, game: Game) => {
+export const getGameResponse = (player: string, game: IGameAttributes) => {
 	let result: IGameResponse | null = null;
 
 	if (player === game.player1) {
@@ -40,7 +40,7 @@ export const getGameResponse = (player: string, game: Game) => {
 	return result;
 };
 
-export const sendGameResponse = (game: Game) => {
+export const sendGameResponse = (game: IGameAttributes) => {
 	const response1 = getGameResponse(game.player1, game)!;
 	users.get(`${game.id}+${game.player1}`)?.emit('message', response1);
 

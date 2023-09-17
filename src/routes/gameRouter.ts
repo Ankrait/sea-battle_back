@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { Game } from 'database/models/game';
+import { repository } from 'repositories';
 import { createToken } from 'common/utils/base';
 import { createField } from 'common/utils/field/create';
 import { IGameIdResponse } from 'common/interfaces';
@@ -20,9 +20,10 @@ gameRouter.post('/', async (req, res) => {
 			return;
 		}
 
-		const game = await Game.create({
+		const game = await repository.create({
 			id: createToken(),
 			player1: name,
+			player2: null,
 			isReady1: false,
 			isReady2: false,
 			status: 'INIT',
@@ -36,7 +37,9 @@ gameRouter.post('/', async (req, res) => {
 		};
 
 		res.status(200).send(response);
-	} catch {
+	} catch(e) {
+		console.log(e);
+		
 		res.status(400).send({ message: 'Ошибка создании игры' });
 	}
 });
@@ -55,7 +58,7 @@ gameRouter.put('/:id', async (req, res) => {
 		}
 
 		const id = req.params.id.toUpperCase();
-		const game = await Game.findByPk(id);
+		const game = await repository.findByPK(id);
 		if (!game) {
 			res.status(400).send({ message: 'Игры по данному ключу нет' });
 			return;
@@ -71,12 +74,19 @@ gameRouter.put('/:id', async (req, res) => {
 			return;
 		}
 
-		game.player2 = name;
-		await game.save();
+		const updated = await repository.put({
+			id: game.id,
+			player2: name,
+		});
+
+		if (!updated) {
+			res.status(400).send({ message: 'Ошибка сервера' });
+			return;
+		}
 
 		const response: IGameIdResponse = {
-			gameId: game.id,
-			user: game.player2,
+			gameId: updated.id,
+			user: updated.player2!,
 		};
 
 		res.status(200).send(response);

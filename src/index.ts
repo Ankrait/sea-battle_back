@@ -1,6 +1,6 @@
 import { server } from 'app';
 import { getConfig } from 'config/config';
-import { sequelize } from 'database/db';
+import { sequelize } from 'database/connectDB';
 
 const PORT = getConfig('PORT');
 

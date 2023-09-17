@@ -10,8 +10,6 @@ import { hitEvent } from './events/hitEvent';
 import { surrenderEvent } from './events/surrenderEvent';
 
 export const dispatchEvent = async (message: any, ws: Socket.Socket) => {
-	console.log(message);
-	
 	const { event, payload } = message as GameRequestType;
 	switch (event) {
 		case 'CONNECTION':

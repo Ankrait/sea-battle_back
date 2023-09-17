@@ -2,9 +2,9 @@ import { DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequ
 
 import { FieldType, GameStatusType } from 'common/interfaces';
 
-import { sequelize } from '../db';
+import { sequelize } from '../connectDB';
 
-export class Game extends Model<InferAttributes<Game>, InferCreationAttributes<Game>> {
+export class Game extends Model<IGameAttributes, IGameCreation> {
 	declare id: string;
 
 	declare player1: string;
@@ -18,6 +18,9 @@ export class Game extends Model<InferAttributes<Game>, InferCreationAttributes<G
 	declare isReady1: boolean;
 	declare isReady2: boolean;
 }
+
+export interface IGameAttributes extends InferAttributes<Game> {}
+export interface IGameCreation extends InferCreationAttributes<Game> {}
 
 Game.init(
 	{

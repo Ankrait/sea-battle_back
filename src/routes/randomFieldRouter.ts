@@ -8,9 +8,11 @@ export const randomFieldRouter = express.Router();
 randomFieldRouter.get('/', (_, res) => {
 	try {
 		let field = randomField();
+		let retryCount = 0;
 
-		while (!isFieldCorrect(field)) {
+		while (!isFieldCorrect(field) && retryCount < 15) {
 			field = randomField();
+			retryCount++;
 		}
 
 		res.status(200).send({ field });

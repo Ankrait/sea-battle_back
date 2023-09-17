@@ -1,14 +1,14 @@
 import Socket from 'socket.io';
 
+import { repository } from 'repositories';
 import { ISchemePayload } from 'common/interfaces';
-import { Game } from 'database/models/game';
 import { isFieldCorrect } from 'common/utils/field/check';
 
 import { sendErrorMessage, sendGameResponse, getGameResponse } from './utils';
 
 export const schemeEvent = async (payload: ISchemePayload, ws: Socket.Socket) => {
 	try {
-		const game = await Game.findOne({ where: { id: payload.gameId.toUpperCase() } });
+		const game = await repository.findByPK(payload.gameId.toUpperCase());
 		if (!game) {
 			sendErrorMessage(ws, 'Игры по данному ключу нет');
 			return;
@@ -20,24 +20,26 @@ export const schemeEvent = async (payload: ISchemePayload, ws: Socket.Socket) =>
 		}
 
 		const playerData = getGameResponse(payload.player, game);
-
 		if (!playerData) {
 			sendErrorMessage(ws, 'Вы не подключены к этой игре');
 			return;
 		}
-
 		if (playerData.isReady) {
 			sendErrorMessage(ws, 'Вы не можете поменять поле, когда готовы');
 			return;
 		}
 
-		game[`field${playerData.userNumber}`] = payload.field;
+		const updated = await repository.put({
+			id: game.id,
+			[`field${playerData.userNumber}`]: payload.field,
+		});
+		if (!updated) {
+			sendErrorMessage(ws, 'Ошибка сервера');
+			return;
+		}
 
-		await game.save();
-
-		sendGameResponse(game);
-	} catch (e) {
-		console.log(e);
+		sendGameResponse(updated);
+	} catch {
 		sendErrorMessage(ws, 'Ошибка сервера');
 	}
 };
