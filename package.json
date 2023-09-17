@@ -4,8 +4,8 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist & tsc",
-    "start": "node .",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "dev": "nodemon --watch src/**/*.ts --exec \"ts-node\" src/index.ts"
   },
   "dependencies": {
