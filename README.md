@@ -1,4 +1,4 @@
-Имитация бэкенда для [sea-battle_front](https://github.com/Ankrait/sea-battle_front).
+Бэкенд для [sea-battle_front](https://github.com/Ankrait/sea-battle_front).
 <br />
 [Ссылка на приложение](https://ankrait.github.io/sea-battle_front/)
 
